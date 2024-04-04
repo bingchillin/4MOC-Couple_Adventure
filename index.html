@@ -28,6 +28,19 @@
             const gettingStartedLink = 'https://workadventu.re/getting-started?name=Map&mapUrl=' + tmjURL;
             document.getElementById('gettingStartedLink').href = gettingStartedLink;
 
+            document.getElementById('triggerButton').addEventListener('click', function () {
+                const event = new CustomEvent('workadventure:trigger', {
+                    detail: {
+                        type: 'teleport',
+                        position: {
+                            x: 10,
+                            y: 10
+                        }
+                    }
+                });
+                window.parent.document.dispatchEvent(event);
+            });
+
             
 
         };

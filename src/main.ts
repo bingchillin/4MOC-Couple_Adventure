@@ -34,6 +34,14 @@ WA.onInit().then(() => {
 
 }).catch(e => console.error(e));
 
+function startQuiz() {
+    if (currentPopup !== undefined) {
+        currentPopup.close();
+        currentPopup = undefined;
+    }
+    WA.ui.openPopup("quizPopup", "Quiz", []);
+}
+
 function closePopup(){
     if (currentPopup !== undefined) {
         currentPopup.close();
