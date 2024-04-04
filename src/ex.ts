@@ -47,43 +47,19 @@ const questions: { [key: string]: string[] } = {
         "Do you enjoy discussing books with others?"
     ]
 };
+
 const responses: { [key: string]: number[] } = {
-    Art: [
-        1,
-        0,
-        1,
-        0,
-        1
-    ], 
+  
     Cuisine: [
         1,
         0,
         1,
-        0,
-        1
-    ],
-    Cinema: [
-        1,
-        0,
-        1,
-        0,
-        1
-    ],
-    Sport: [
-        1,
-        0,
-        1,
-        0,
-        1
-    ],
-    Culture: [
-        1,
-        0,
-        1,
         0
-    ]
+    ],
+   
 };
-    
+
+
 function getQuestionsOfInterest(interest: string) {
     return questions[interest];
 
@@ -109,24 +85,32 @@ function calculeScoreForOneUser(userReponse: number[], interest: string):number 
 
 }
 
+function MatchTwoUsers(Score_user1: number, Score_user2: number) {
+    if (scoreTotal > 5 && scoreTotal > 5) {
+        return "You Match";
+    }
+    else {
+        return "You have different interests";
+    }
+}
+
+function SetScore() {
+    return 6
+}
+
+
+
+
+
+
+
+
+
 // Waiting for the API to be ready
 WA.onInit().then(() => {
-    console.log('Scripting API ready');
-
-    if(WA.player.state.tags === undefined){
-        WA.ui.modal.openModal({
-            title: "WorkAdventure website",
-            src: 'http://localhost:5173/iframe_tags_form.html',
-            allow: "fullscreen",
-            allowApi: true,
-            position: "center",
-        },
-        () => {
-            console.log(WA.player.state.tags);
-        }
-        );
-    }
+    WA.player.state.prenom = ["Football", "SQL", "JAVA", "Dormir", "Gaming"];
     let helloWorldPopup: Popup;
+    WA.player.state.Score = SetScore();
     const score = WA.player.state.Score;
     const hobiesList: string = "Hobby \n" + Interests.join("\n");
     WA.ui.onRemotePlayerClicked.subscribe((remotePlayer: RemotePlayer) => {
@@ -167,11 +151,19 @@ WA.onInit().then(() => {
                 ])
             });
     });
+
+    console.log('Scripting API ready');
+    console.log('Player tags: ', WA.player.tags)
+
+
+
+
+    const test = WA.player.state.Test
+    WA.ui.openPopup('popup', "test" + test, [])
     WA.room.area.onEnter('clock').subscribe(() => {
         const today = new Date();
         const time = today.getHours() + ":" + today.getMinutes();
         currentPopup = WA.ui.openPopup("clockPopup", "It's " + time, []);
-        console.log(WA.player.state.tags);
     })
 
     WA.room.area.onLeave('clock').subscribe(closePopup)
@@ -181,15 +173,15 @@ WA.onInit().then(() => {
         console.log('Scripting API Extra ready');
     }).catch(e => console.error(e));
 
-}).catch(e => console.error(e));
+}
+).catch(e => console.error(e));
 
-function closePopup(){
+function closePopup() {
     if (currentPopup !== undefined) {
         currentPopup.close();
         currentPopup = undefined;
     }
 }
-
 function match() {
    
     const cuisine = getQuestionsOfInterest("Cuisine");
@@ -228,4 +220,5 @@ else{
 }
 }
 
-export {};
+
+export { };
