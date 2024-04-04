@@ -30,9 +30,7 @@ let currentPopup: any = undefined;
     await WA.players.configureTracking();
     const players = WA.players.list();
     for (const player of players) {
-   
-            player.sendEvent("my-event", "my payload");
-        
+        player.sendEvent("my-event", "my payload");
     }
 
     // Subscribe to events
@@ -53,8 +51,6 @@ let currentPopup: any = undefined;
         WA.controls.restorePlayerProximityMeeting();
     });
 
-
-  
 
     // The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure
     bootstrapExtra().then(() => {
