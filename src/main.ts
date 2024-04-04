@@ -1,4 +1,4 @@
-/// <reference types="@workadventure/iframe-api-typings" />
+///<reference types="@workadventure/iframe-api-typings" />
 
 import { Popup } from "@workadventure/iframe-api-typings";
 import { RemotePlayer } from "@workadventure/iframe-api-typings/front/Api/Iframe/Players/RemotePlayer";
@@ -9,8 +9,8 @@ console.log('Script started successfully');
 let currentPopup: any = undefined;
 let scoreTotal = 0;
 let i = 0;
-let results: number[]=[];
-const Interests = ["Art ", "Cuisine", "Cinema", "Sport", "Culture"]
+let results: number[] = [];
+const Interests = ["Art ", "Cuisine", "Cinema", "Sport", "Culture"];
 const questions: { [key: string]: string[] } = {
     Art: [
         "Pablo Picasso était un célèbre artiste espagnol ?",
@@ -49,31 +49,25 @@ const questions: { [key: string]: string[] } = {
 };
 
 const responses: { [key: string]: number[] } = {
-  
     Cuisine: [
         1,
         0,
         1,
         0
     ],
-   
 };
-
 
 function getQuestionsOfInterest(interest: string) {
     return questions[interest];
-
 }
 
 function getResponsesOfInterest(interest: string) {
     return responses[interest];
-
 }
 
-function calculeScoreForOneUser(userReponse: number[], interest: string):number {
+function calculeScoreForOneUser(userReponse: number[], interest: string): number {
     let score = 0;
     let reponseExact: number[] = getResponsesOfInterest(interest);
-    
 
     for (let i = 0; i < userReponse.length; i++) {
         if (userReponse[i] == reponseExact[i]) {
@@ -82,7 +76,6 @@ function calculeScoreForOneUser(userReponse: number[], interest: string):number 
     }
     
     return score;
-
 }
 
 function MatchTwoUsers(Score_user1: number, Score_user2: number) {
@@ -95,16 +88,8 @@ function MatchTwoUsers(Score_user1: number, Score_user2: number) {
 }
 
 function SetScore() {
-    return 6
+    return 6;
 }
-
-
-
-
-
-
-
-
 
 // Waiting for the API to be ready
 WA.onInit().then(() => {
@@ -122,10 +107,8 @@ WA.onInit().then(() => {
                     callback: (popup) => {
                         match();
                         popup.close();
-
                     }
                 },
-
                 {
                     label: "No",
                     className: "success",
@@ -135,46 +118,37 @@ WA.onInit().then(() => {
                 }
             ])
         }),
-
-
-            remotePlayer.addAction('View interest', () => {
-                helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n" + "Score : " + score, [
-                
-
-                    {
-                        label: "Close",
-                        className: "success",
-                        callback: (popup) => {
-                            popup.close();
-                        }
+        remotePlayer.addAction('View interest', () => {
+            helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n" + "Score : " + score, [
+                {
+                    label: "Close",
+                    className: "success",
+                    callback: (popup) => {
+                        popup.close();
                     }
-                ])
-            });
+                }
+            ])
+        });
     });
 
     console.log('Scripting API ready');
     console.log('Player tags: ', WA.player.tags)
 
-
-
-
-    const test = WA.player.state.Test
-    WA.ui.openPopup('popup', "test" + test, [])
+    const test = WA.player.state.Test;
+    WA.ui.openPopup('popup', "test" + test, []);
     WA.room.area.onEnter('clock').subscribe(() => {
         const today = new Date();
         const time = today.getHours() + ":" + today.getMinutes();
         currentPopup = WA.ui.openPopup("clockPopup", "It's " + time, []);
-    })
+    });
 
-    WA.room.area.onLeave('clock').subscribe(closePopup)
+    WA.room.area.onLeave('clock').subscribe(closePopup);
 
     // The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure
     bootstrapExtra().then(() => {
         console.log('Scripting API Extra ready');
     }).catch(e => console.error(e));
-
-}
-).catch(e => console.error(e));
+}).catch(e => console.error(e));
 
 function closePopup() {
     if (currentPopup !== undefined) {
@@ -182,8 +156,8 @@ function closePopup() {
         currentPopup = undefined;
     }
 }
+
 function match() {
-   
     const cuisine = getQuestionsOfInterest("Cuisine");
     if (i < 4) {
         WA.ui.openPopup("clockPopup", `${cuisine[0]}\n`, [
@@ -193,32 +167,26 @@ function match() {
                 callback: (popup) => {
                     i++; // Incrémente i
                     results.push(1);
-                    console.log("yes",results)
-
+                    console.log("yes", results);
                     popup.close();
-                    match(); 
+                    match();
                 }
             },
             {
                 label: "No",
                 className: "success",
                 callback: (popup) => {
-                    i++; 
+                    i++;
                     results.push(0);
-                    console.log("no",results)
-
+                    console.log("no", results);
                     popup.close();
                     match();
                 }
             }
         ]);
+    } else {
+        scoreTotal = calculeScoreForOneUser(results, "Cuisine");
     }
-else{
-
-    scoreTotal =  calculeScoreForOneUser(results,"Cuisine");
-
-}
 }
 
-
-export { };
+export {};
