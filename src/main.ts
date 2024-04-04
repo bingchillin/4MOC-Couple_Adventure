@@ -9,16 +9,17 @@ let currentPopup: any = undefined;
 // Waiting for the API to be ready
 WA.onInit().then(() => {
     console.log('Scripting API ready');
-    console.log('Player tags: ',WA.player.tags)
 
-
-    if(WA.room.mapURL === 'http://localhost:5173/map.tmj'){
+    if(WA.room.mapURL === 'http://localhost:5173/map.tmj' && WA.player.state.tags === undefined){
         WA.ui.modal.openModal({
             title: "WorkAdventure website",
             src: 'http://localhost:5173/iframe_tags_form.html',
             allow: "fullscreen",
             allowApi: true,
             position: "center",
+        },
+        () => {
+            console.log(WA.player.state.tags);
         }
         );
     }
@@ -27,6 +28,7 @@ WA.onInit().then(() => {
         const today = new Date();
         const time = today.getHours() + ":" + today.getMinutes();
         currentPopup = WA.ui.openPopup("clockPopup", "It's " + time, []);
+        console.log(WA.player.state.tags);
     })
 
     WA.room.area.onLeave('clock').subscribe(closePopup)

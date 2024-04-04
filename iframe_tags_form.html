@@ -43,7 +43,7 @@
 </head>
 <body>
     <div id="titre">
-        <h1>Veuillez sélectionner vos centre d'intérêts</h1>
+        <h1>Veuillez sélectionner vos centres d'intérêt</h1>
     </div>
     <div id="tags">
         <div class="tag">Art</div>
@@ -71,7 +71,22 @@
                 selectedTags.push(element.textContent);
             });
             console.log(selectedTags);
-            WA.ui.modal.closeModal();
+
+            if(selectedTags.length>0){
+                WA.player.state.saveVariable(
+                    key = 'tags',
+                    value = selectedTags,
+                    options = {
+                        public: true,
+                        persist: true,
+                        scope: "world",
+                    }
+                )
+                WA.ui.modal.closeModal();
+            }else{
+                alert("Veuillez sélectionner au moins 1 sujet");
+            }
+            
         });
     </script>
 </body>
