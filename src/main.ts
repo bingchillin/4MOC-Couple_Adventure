@@ -8,6 +8,7 @@ console.log('Script started successfully');
 
 let currentPopup: any = undefined;
 let scoreTotal = 0;
+let HobbiesCommun: string;
 let i = 0;
 let results: number[]=[];
 const Interests = ["Art ", "Cuisine", "Cinema", "Sport", "Culture"]
@@ -109,6 +110,20 @@ function calculeScoreForOneUser(userReponse: number[], interest: string):number 
 
 }
 
+function Ismatch(hobiesListPlayer1 : string[] , hobiesListPlayer2 : string[]) {
+    let score = 0;
+    
+    for (let i = 0; i < hobiesListPlayer1.length; i++) {
+        for (let j = 0; j < hobiesListPlayer2.length; j++) {
+            if (hobiesListPlayer1[i] == hobiesListPlayer2[j]) {
+                HobbiesCommun = hobiesListPlayer1[i];
+                score++;
+            }
+        }
+    }
+    return score;
+}
+
 // Waiting for the API to be ready
 WA.onInit().then(() => {
     console.log('Scripting API ready');
@@ -130,7 +145,12 @@ WA.onInit().then(() => {
     const tags = WA.player.state.tags as string[];
     const score = WA.player.state.Score;
     const hobiesList: string = "Hobby \n" + tags.join("\n");
+    console.log('Player owner',WA.player.state.name);
     WA.ui.onRemotePlayerClicked.subscribe((remotePlayer: RemotePlayer) => {
+        const remoteTags = remotePlayer.state.tags as string[];
+        let r1 = Ismatch(tags, remoteTags as string[]);
+
+        console.log('Player clicked:', remotePlayer.name);
         remotePlayer.addAction('Afficher les hoobies', () => {
             helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n", [
                 {
@@ -192,10 +212,11 @@ function closePopup(){
 }
 
 function match() {
-   
-    const cuisine = getQuestionsOfInterest("Cuisine");
+    let questionsSet : string[] = getQuestionsOfInterest(HobbiesCommun);
+    
+    const cuisine = getQuestionsOfInterest("Cuisine"); 
     if (i < 4) {
-        WA.ui.openPopup("clockPopup", `${cuisine[0]}\n`, [
+        WA.ui.openPopup("clockPopup", `${questionsSet[i]}\n`, [
             {
                 label: "yes",
                 className: "primary",
