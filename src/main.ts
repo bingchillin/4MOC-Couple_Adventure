@@ -3,7 +3,6 @@
 import { Popup } from "@workadventure/iframe-api-typings";
 import { RemotePlayer } from "@workadventure/iframe-api-typings/front/Api/Iframe/Players/RemotePlayer";
 import { bootstrapExtra } from "@workadventure/scripting-api-extra";
-import { match } from "assert";
 
 console.log('Script started successfully');
 
@@ -140,7 +139,7 @@ WA.onInit().then(() => {
                     label: "Match",
                     className: "primary",
                     callback: (popup) => {
-                        
+                        match()
                         popup.close();
                     }
                 },
@@ -160,7 +159,7 @@ WA.onInit().then(() => {
                     label: "Match",
                     className: "primary",
                     callback: (popup) => {
-                        
+                        match()
                         popup.close();
                     }
                 },
@@ -203,5 +202,11 @@ function closePopup(){
         currentPopup = undefined;
     }
 }
+function match(): void {
+   
+    console.log("Correspondance");
+    WA.player.moveTo(76, 144);
 
+  
+}
 export {};
