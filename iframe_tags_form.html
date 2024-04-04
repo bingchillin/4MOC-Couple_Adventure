@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ff6ef5;
+        }
+        #tags{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+        #saveButton{
+            padding: 8px 16px;
+            margin-top: 30px;
+            background-color: #ca6d2a;
+            color: #000000;
+            border-radius: 5px;
+        }
+        .tag {
+            padding: 8px 16px;
+            margin: 4px;
+            background-color: #ca2a2a;
+            color: #000000;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .selected {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div id="titre">
+        <h1>Veuillez sélectionner vos centre d'intérêts</h1>
+    </div>
+    <div id="tags">
+        <div class="tag">Art</div>
+        <div class="tag">Cuisine</div>
+        <div class="tag">Cinema</div>
+        <div class="tag">Sport</div>
+        <div class="tag">Culture G</div>
+    </div>
+    <div>
+        <button id="saveButton">Valider</button>
+    </div>
+    <script>
+        const selectedTags = []; // Initialisation du tableau pour stocker les tags sélectionnés
+        
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+
+        document.getElementById('saveButton').addEventListener('click', function() {
+            const selectedElements = document.querySelectorAll('.tag.selected');
+            selectedTags.length = 0;
+            selectedElements.forEach(element => {
+                selectedTags.push(element.textContent);
+            });
+            console.log(selectedTags);
+            WA.ui.modal.closeModal();
+        });
+    </script>
+</body>
+</html>
