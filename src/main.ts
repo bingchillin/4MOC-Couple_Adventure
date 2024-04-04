@@ -127,8 +127,9 @@ WA.onInit().then(() => {
         );
     }
     let helloWorldPopup: Popup;
+    const tags = WA.player.state.tags as string[]|undefined;
     const score = WA.player.state.Score;
-    const hobiesList: string = "Hobby \n" + Interests.join("\n");
+    const hobiesList: string = "Hobby \n" + tags?.join("\n");
     WA.ui.onRemotePlayerClicked.subscribe((remotePlayer: RemotePlayer) => {
         remotePlayer.addAction('Afficher les hoobies', () => {
             helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n", [
