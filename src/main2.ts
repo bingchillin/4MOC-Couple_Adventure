@@ -1,5 +1,7 @@
 /// <reference types="@workadventure/iframe-api-typings" />
 
+import { Popup } from "@workadventure/iframe-api-typings";
+import { RemotePlayer } from "@workadventure/iframe-api-typings/front/Api/Iframe/Players/RemotePlayer";
 import { bootstrapExtra } from "@workadventure/scripting-api-extra";
 
 console.log('Script started successfully');
@@ -7,7 +9,7 @@ console.log('Script started successfully');
 let currentPopup: any = undefined;
 let scoreTotal = 0;
 let i = 0;
-let results = [];
+let results: number[]=[];
 const Interests = ["Art ", "Cuisine", "Cinema", "Sport", "Culture"]
 const questions: { [key: string]: string[] } = {
     Art: [
@@ -45,43 +47,19 @@ const questions: { [key: string]: string[] } = {
         "Do you enjoy discussing books with others?"
     ]
 };
+
 const responses: { [key: string]: number[] } = {
-    Art: [
-        1,
-        0,
-        1,
-        0,
-        1
-    ], 
+  
     Cuisine: [
         1,
         0,
         1,
-        0,
-        1
-    ],
-    Cinema: [
-        1,
-        0,
-        1,
-        0,
-        1
-    ],
-    Sport: [
-        1,
-        0,
-        1,
-        0,
-        1
-    ],
-    Culture: [
-        1,
-        0,
-        1,
         0
-    ]
+    ],
+   
 };
-    
+
+
 function getQuestionsOfInterest(interest: string) {
     return questions[interest];
 
@@ -107,29 +85,85 @@ function calculeScoreForOneUser(userReponse: number[], interest: string):number 
 
 }
 
+function MatchTwoUsers(Score_user1: number, Score_user2: number) {
+    if (scoreTotal > 5 && scoreTotal > 5) {
+        return "You Match";
+    }
+    else {
+        return "You have different interests";
+    }
+}
+
+function SetScore() {
+    return 6
+}
+
+
+
+
+
+
+
+
+
 // Waiting for the API to be ready
 WA.onInit().then(() => {
+    WA.player.state.prenom = ["Football", "SQL", "JAVA", "Dormir", "Gaming"];
+    let helloWorldPopup: Popup;
+    WA.player.state.Score = SetScore();
+    const score = WA.player.state.Score;
+    const hobiesList: string = "Hobby \n" + Interests.join("\n");
+    WA.ui.onRemotePlayerClicked.subscribe((remotePlayer: RemotePlayer) => {
+        remotePlayer.addAction('Afficher les hoobies', () => {
+            helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n", [
+                {
+                    label: "Match",
+                    className: "primary",
+                    callback: (popup) => {
+                        match();
+                        popup.close();
+
+                    }
+                },
+
+                {
+                    label: "No",
+                    className: "success",
+                    callback: (popup) => {
+                        popup.close();
+                    }
+                }
+            ])
+        }),
+
+
+            remotePlayer.addAction('View interest', () => {
+                helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n" + "Score : " + score, [
+                
+
+                    {
+                        label: "Close",
+                        className: "success",
+                        callback: (popup) => {
+                            popup.close();
+                        }
+                    }
+                ])
+            });
+    });
+
     console.log('Scripting API ready');
+    console.log('Player tags: ', WA.player.tags)
 
-    if(WA.room.mapURL === 'http://localhost:5173/map.tmj' && WA.player.state.tags === undefined){
-        WA.ui.modal.openModal({
-            title: "WorkAdventure website",
-            src: 'http://localhost:5173/iframe_tags_form.html',
-            allow: "fullscreen",
-            allowApi: true,
-            position: "center",
-        },
-        () => {
-            console.log(WA.player.state.tags);
-        }
-        );
-    }
 
+
+
+    const test = WA.player.state.Test
+    WA.ui.openPopup('popup', "test" + test, [])
     WA.room.area.onEnter('clock').subscribe(() => {
         const today = new Date();
         const time = today.getHours() + ":" + today.getMinutes();
         currentPopup = WA.ui.openPopup("clockPopup", "It's " + time, []);
-        console.log(WA.player.state.tags);
     })
 
     WA.room.area.onLeave('clock').subscribe(closePopup)
@@ -139,13 +173,52 @@ WA.onInit().then(() => {
         console.log('Scripting API Extra ready');
     }).catch(e => console.error(e));
 
-}).catch(e => console.error(e));
+}
+).catch(e => console.error(e));
 
-function closePopup(){
+function closePopup() {
     if (currentPopup !== undefined) {
         currentPopup.close();
         currentPopup = undefined;
     }
 }
+function match() {
+   
+    const cuisine = getQuestionsOfInterest("Cuisine");
+    if (i < 4) {
+        WA.ui.openPopup("clockPopup", `${cuisine[0]}\n`, [
+            {
+                label: "yes",
+                className: "primary",
+                callback: (popup) => {
+                    i++; // Incrémente i
+                    results.push(1);
+                    console.log("yes",results)
 
-export {};
+                    popup.close();
+                    match(); 
+                }
+            },
+            {
+                label: "No",
+                className: "success",
+                callback: (popup) => {
+                    i++; 
+                    results.push(0);
+                    console.log("no",results)
+
+                    popup.close();
+                    match();
+                }
+            }
+        ]);
+    }
+else{
+
+    scoreTotal =  calculeScoreForOneUser(results,"Cuisine");
+
+}
+}
+
+
+export { };
