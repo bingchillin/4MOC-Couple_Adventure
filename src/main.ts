@@ -11,13 +11,17 @@ WA.onInit().then(() => {
     console.log('Scripting API ready');
     console.log('Player tags: ',WA.player.tags)
 
-    WA.ui.modal.openModal({
-        title: "WorkAdventure website",
-        src: 'http://localhost:5173/iframe_tags_form.html',
-        allow: "fullscreen",
-        allowApi: true,
-        position: "center"
-    });
+
+    if(WA.room.mapURL === 'http://localhost:5173/map.tmj'){
+        WA.ui.modal.openModal({
+            title: "WorkAdventure website",
+            src: 'http://localhost:5173/iframe_tags_form.html',
+            allow: "fullscreen",
+            allowApi: true,
+            position: "center",
+        }
+        );
+    }
 
     WA.room.area.onEnter('clock').subscribe(() => {
         const today = new Date();
