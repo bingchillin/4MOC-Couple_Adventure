@@ -146,13 +146,30 @@ WA.onInit().then(() => {
     let helloWorldPopup: Popup;
     const tags = WA.player.state.tags as string[];
     const score = WA.player.state.Score;
+
     const hobiesList: string = "Hobby \n" + tags.join("\n");
     console.log('Player owner', WA.player.state.name);
+    //WA.state.onVariableChange('showpopup').subscribe((value) => {
+       // console.log('Variable "showpopup" changed. New value: ', value);
+        //if (value==true) { 
+           // match(); 
+       // }
+   // });
+
+
+
+    WA.state.onVariableChange('posi').subscribe((value) => {
+        console.log("hii", value);
+        
+        WA.player.moveTo(value.x, value.y);
+        console.log('Variable "config" changed. New value: ', value);
+    });
     WA.ui.onRemotePlayerClicked.subscribe((remotePlayer: RemotePlayer) => {
         const remoteTags = remotePlayer.state.tags as string[];
         r1 = Ismatch(tags, remoteTags as string[]);
 
         console.log('Player clicked:', remotePlayer.name);
+        
         remotePlayer.addAction('Afficher les hoobies', () => {
             helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n", [
                 {
@@ -198,8 +215,8 @@ WA.onInit().then(() => {
     })
 
     WA.room.area.onLeave('clock').subscribe(closePopup)
+   
 
-    // The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure
     bootstrapExtra().then(() => {
         console.log('Scripting API Extra ready');
     }).catch(e => console.error(e));
@@ -215,9 +232,9 @@ function closePopup() {
 
 async function match() {
     let questionsSet: string[] = getQuestionsOfInterest(HobbiesCommun);
+    
 
-
-    if (i < questionsSet.length) {
+    if (questionsSet && questionsSet.length > 0 && i<questionsSet.length) {
         WA.ui.openPopup("clockPopup", `${questionsSet[i]}\n`, [
             {
                 label: "yes",
@@ -248,16 +265,29 @@ async function match() {
     else {
         scoreTotal = calculeScoreForOneUser(results, HobbiesCommun);
         console.log("scoreTotalUser1", scoreTotal);
-        results = [];
+    
         WA.player.state.Score = scoreTotal;
-        if(scoreTotal >= 3)
-        {
+        if (scoreTotal >= 3) {
             WA.player.setOutlineColor(0, 255, 0); // Vert
+            let posi=WA.state.loadVariable('posi');
+            
+            WA.state.saveVariable('posi', {
+                x: 72,
+                y: 145
+            }).catch(e => console.error('Something went wrong while saving variable', e));
+            posi=WA.state.loadVariable('posi');
+            //...
+            //posi = WA.state.loadVariable('posi');
 
-        }else{
+
+
+        } else {
             WA.player.setOutlineColor(255, 0, 0); // Rouge
-            WA.player.moveTo(364,236,10);
+
+
+
         }
+
         /*if (r1 >= 2) {
             WA.event.broadcast("my-event", "my payload");
             await WA.players.configureTracking();
@@ -271,10 +301,9 @@ async function match() {
                 console.log("Event received", event.data);
             });
 
+    */
 
-        }
-    */    }
-
+    }
 }
 
 export { };
