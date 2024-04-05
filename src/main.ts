@@ -189,6 +189,7 @@ WA.onInit().then(() => {
         r1 = Ismatch(tags, remoteTags as string[]);
 
         console.log('Player clicked:', remotePlayer.name);
+        if ( r1!=0){
         remotePlayer.addAction('Match', () => {
             const buttons : ButtonDescriptor[] = [
                 {
@@ -226,7 +227,7 @@ WA.onInit().then(() => {
         
             helloWorldPopup = WA.ui.openPopup("clockPopup", "Hobbies commun", buttons);
         });
-        
+    }
 
 
             remotePlayer.addAction('View interest', () => {
