@@ -1,8 +1,9 @@
 /// <reference types="@workadventure/iframe-api-typings" />
 
 import { Popup } from "@workadventure/iframe-api-typings";
-import { RemotePlayer } from "@workadventure/iframe-api-typings/front/Api/Iframe/Players/RemotePlayer";
+import { RemotePlayer } from "@workadventure/iframe-api-typings/play/src/front/Api/Iframe/Players/RemotePlayer";
 import { bootstrapExtra } from "@workadventure/scripting-api-extra";
+import {robot} from "./robot";
 
 console.log('Script started successfully');
 
@@ -145,6 +146,13 @@ WA.onInit().then(() => {
             console.log(WA.player.state.tags);
         }
         );
+    }
+
+    if (WA.room.hashParameters.bot) {
+        robot.init();
+        WA.player.moveTo(425,120);
+        WA.player.teleport(425,90)
+        //WA.player.moveTo(431,400);
     }
 
     WA.room.area.onEnter('clock').subscribe(() => {
