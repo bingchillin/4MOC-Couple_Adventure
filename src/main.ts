@@ -3,7 +3,9 @@
 import { ButtonDescriptor, Popup } from "@workadventure/iframe-api-typings";
 import { RemotePlayer, RemotePlayerInterface } from "@workadventure/iframe-api-typings/play/src/front/Api/Iframe/Players/RemotePlayer";
 import { bootstrapExtra } from "@workadventure/scripting-api-extra";
-import { exit } from "process";
+import {robot} from "./robot";
+
+
 
 console.log('Script started successfully');
 
@@ -165,6 +167,12 @@ WA.onInit().then(() => {
     const tags = WA.player.state.tags as string[];
     const score = WA.player.state.Score;
     const hobiesList: string = "Hobby \n" + tags.join("\n");
+    if (WA.room.hashParameters.bot) {
+        robot.init();
+        WA.player.moveTo(425,120);
+        WA.player.teleport(425,90)
+        //WA.player.moveTo(431,400);
+    }
     console.log('Player owner', WA.player.state.name);
     WA.ui.onRemotePlayerClicked.subscribe((remotePlayer: RemotePlayer) => {
         const remoteTags = remotePlayer.state.tags as string[];
@@ -216,7 +224,7 @@ WA.onInit().then(() => {
                     {
                         label: "Close",
                         className: "success",
-                        callback: (popup) => {
+                        callback: (popup : Popup) => {
                             popup.close();
                         }
                     }
@@ -255,7 +263,7 @@ async function match() {
             {
                 label: "yes",
                 className: "primary",
-                callback: (popup) => {
+                callback: (popup : Popup) => {
                     i++; // Incrémente i
                     results.push(1);
                     console.log("yes", results)
@@ -267,7 +275,7 @@ async function match() {
             {
                 label: "No",
                 className: "success",
-                callback: (popup) => {
+                callback: (popup: Popup) => {
                     i++;
                     results.push(0);
                     console.log("no", results)
