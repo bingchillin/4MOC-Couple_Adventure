@@ -1,16 +1,17 @@
 /// <reference types="@workadventure/iframe-api-typings" />
 
 import { Popup } from "@workadventure/iframe-api-typings";
-import { RemotePlayer } from "@workadventure/iframe-api-typings/front/Api/Iframe/Players/RemotePlayer";
+import { RemotePlayer, RemotePlayerInterface } from "@workadventure/iframe-api-typings/play/src/front/Api/Iframe/Players/RemotePlayer";
 import { bootstrapExtra } from "@workadventure/scripting-api-extra";
 
 console.log('Script started successfully');
 
 let currentPopup: any = undefined;
-let scoreTotal = 0;
+
 let HobbiesCommun: string;
 let i = 0;
-let results: number[]=[];
+let r1 = 0;
+let results: number[] = [];
 const Interests = ["Art ", "Cuisine", "Cinema", "Sport", "Culture"]
 const questions: { [key: string]: string[] } = {
     Art: [
@@ -55,7 +56,7 @@ const responses: { [key: string]: number[] } = {
         1,
         0,
         1
-    ], 
+    ],
     Cuisine: [
         1,
         0,
@@ -84,7 +85,7 @@ const responses: { [key: string]: number[] } = {
         0
     ]
 };
-    
+
 function getQuestionsOfInterest(interest: string) {
     return questions[interest];
 
@@ -95,24 +96,24 @@ function getResponsesOfInterest(interest: string) {
 
 }
 
-function calculeScoreForOneUser(userReponse: number[], interest: string):number {
+function calculeScoreForOneUser(userReponse: number[], interest: string): number {
     let score = 0;
     let reponseExact: number[] = getResponsesOfInterest(interest);
-    
+
 
     for (let i = 0; i < userReponse.length; i++) {
         if (userReponse[i] == reponseExact[i]) {
             score++;
         }
     }
-    
+
     return score;
 
 }
 
-function Ismatch(hobiesListPlayer1 : string[] , hobiesListPlayer2 : string[]) {
+function Ismatch(hobiesListPlayer1: string[], hobiesListPlayer2: string[]) {
     let score = 0;
-    
+
     for (let i = 0; i < hobiesListPlayer1.length; i++) {
         for (let j = 0; j < hobiesListPlayer2.length; j++) {
             if (hobiesListPlayer1[i] == hobiesListPlayer2[j]) {
@@ -128,7 +129,7 @@ function Ismatch(hobiesListPlayer1 : string[] , hobiesListPlayer2 : string[]) {
 WA.onInit().then(() => {
     console.log('Scripting API ready');
 
-    if(WA.player.state.tags === undefined){
+    if (WA.player.state.tags === undefined) {
         WA.ui.modal.openModal({
             title: "WorkAdventure website",
             src: 'http://localhost:5173/iframe_tags_form.html',
@@ -136,19 +137,19 @@ WA.onInit().then(() => {
             allowApi: true,
             position: "center",
         },
-        () => {
-            console.log(WA.player.state.tags);
-        }
+            () => {
+                console.log(WA.player.state.tags);
+            }
         );
     }
     let helloWorldPopup: Popup;
     const tags = WA.player.state.tags as string[];
     const score = WA.player.state.Score;
     const hobiesList: string = "Hobby \n" + tags.join("\n");
-    console.log('Player owner',WA.player.state.name);
+    console.log('Player owner', WA.player.state.name);
     WA.ui.onRemotePlayerClicked.subscribe((remotePlayer: RemotePlayer) => {
         const remoteTags = remotePlayer.state.tags as string[];
-        let r1 = Ismatch(tags, remoteTags as string[]);
+        r1 = Ismatch(tags, remoteTags as string[]);
 
         console.log('Player clicked:', remotePlayer.name);
         remotePlayer.addAction('Afficher les hoobies', () => {
@@ -176,7 +177,7 @@ WA.onInit().then(() => {
 
             remotePlayer.addAction('View interest', () => {
                 helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n" + "Score : " + score, [
-                
+
 
                     {
                         label: "Close",
@@ -204,17 +205,17 @@ WA.onInit().then(() => {
 
 }).catch(e => console.error(e));
 
-function closePopup(){
+function closePopup() {
     if (currentPopup !== undefined) {
         currentPopup.close();
         currentPopup = undefined;
     }
 }
 
-function match() {
-    let questionsSet : string[] = getQuestionsOfInterest(HobbiesCommun);
-    
-    const cuisine = getQuestionsOfInterest("Cuisine"); 
+async function match() {
+    let questionsSet: string[] = getQuestionsOfInterest(HobbiesCommun);
+
+    const cuisine = getQuestionsOfInterest("Cuisine");
     if (i < 4) {
         WA.ui.openPopup("clockPopup", `${questionsSet[i]}\n`, [
             {
@@ -223,19 +224,19 @@ function match() {
                 callback: (popup) => {
                     i++; // Incrémente i
                     results.push(1);
-                    console.log("yes",results)
+                    console.log("yes", results)
 
                     popup.close();
-                    match(); 
+                    match();
                 }
             },
             {
                 label: "No",
                 className: "success",
                 callback: (popup) => {
-                    i++; 
+                    i++;
                     results.push(0);
-                    console.log("no",results)
+                    console.log("no", results)
 
                     popup.close();
                     match();
@@ -243,11 +244,23 @@ function match() {
             }
         ]);
     }
-else{
+    else {
+        if (r1 >= 2) {
+            WA.event.broadcast("my-event", "my payload");
+            await WA.players.configureTracking();
+             const players = WA.players.list() ;
+            for (const player of players) {
+                player.sendEvent("my-event", "my payload");
+                WA.player.moveTo(72, 144);
 
-    scoreTotal =  calculeScoreForOneUser(results,"Cuisine");
+            }
+            WA.event.on("my-event").subscribe((event) => {
+                console.log("Event received", event.data);
+            });
 
+
+        }
+    }
 }
-}
 
-export {};
+export { };
