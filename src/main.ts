@@ -1,14 +1,17 @@
 /// <reference types="@workadventure/iframe-api-typings" />
 
-import { Popup } from "@workadventure/iframe-api-typings";
+import { ButtonDescriptor, Popup } from "@workadventure/iframe-api-typings";
 import { RemotePlayer, RemotePlayerInterface } from "@workadventure/iframe-api-typings/play/src/front/Api/Iframe/Players/RemotePlayer";
 import { bootstrapExtra } from "@workadventure/scripting-api-extra";
+import { exit } from "process";
 
 console.log('Script started successfully');
 
 let currentPopup: any = undefined;
 
-let HobbiesCommun: string;
+let HobbiesCommun: string[] = [];
+
+let QuizzClicked : string;
 let i = 0;
 let r1 = 0;
 let scoreTotal = 0;
@@ -44,10 +47,11 @@ const questions: { [key: string]: string[] } = {
         "Le hockey sur glace est un sport d'équipe qui se joue avec un palet et des patins à glace ?"
     ],
     Culture: [
-        "Do you like reading books?",
-        "Do you prefer novels over essays?",
-        "Have you ever joined a book club?",
-        "Do you enjoy discussing books with others?"
+        "La Grande Muraille de Chine est visible depuis la Lune ?",
+        " La Tour Eiffel est située à Londres ?",
+        "William Shakespeare a écrit 'Romeo et Juliette'?",
+        "La capitale du Japon est Shanghai ?",
+        "La peinture de Mona Lisa a été peinte par Vincent van Gogh ?"
     ]
 };
 const responses: { [key: string]: number[] } = {
@@ -80,9 +84,10 @@ const responses: { [key: string]: number[] } = {
         1
     ],
     Culture: [
-        1,
+        0,
         0,
         1,
+        0,
         0
     ]
 };
@@ -114,15 +119,23 @@ function calculeScoreForOneUser(userReponse: number[], interest: string): number
 
 function Ismatch(hobiesListPlayer1: string[], hobiesListPlayer2: string[]) {
     let score = 0;
-
+    if(hobiesListPlayer1 == undefined || hobiesListPlayer2 == undefined)
+    { 
+        console.log("INDEFINED");
+        return 0;
+    }
+    else {
     for (let i = 0; i < hobiesListPlayer1.length; i++) {
         for (let j = 0; j < hobiesListPlayer2.length; j++) {
+            
             if (hobiesListPlayer1[i] == hobiesListPlayer2[j]) {
-                HobbiesCommun = hobiesListPlayer1[i];
+               
+                HobbiesCommun.push( hobiesListPlayer1[i]);
                 score++;
             }
         }
     }
+}
     return score;
 }
 
@@ -141,7 +154,12 @@ WA.onInit().then(() => {
             () => {
                 console.log(WA.player.state.tags);
             }
+            
         );
+
+        window.location.reload();
+
+        
     }
     let helloWorldPopup: Popup;
     const tags = WA.player.state.tags as string[];
@@ -153,27 +171,42 @@ WA.onInit().then(() => {
         r1 = Ismatch(tags, remoteTags as string[]);
 
         console.log('Player clicked:', remotePlayer.name);
-        remotePlayer.addAction('Afficher les hoobies', () => {
-            helloWorldPopup = WA.ui.openPopup("clockPopup", "" + hobiesList + "\n", [
+        remotePlayer.addAction('Match', () => {
+            const buttons : ButtonDescriptor[] = [
                 {
-                    label: "Match",
+                    label: HobbiesCommun[0]+"\n",
                     className: "primary",
                     callback: (popup) => {
                         match();
                         popup.close();
-
-                    }
-                },
-
-                {
-                    label: "No",
-                    className: "success",
-                    callback: (popup) => {
-                        popup.close();
                     }
                 }
-            ])
-        }),
+            ];
+        
+            for (let i = 1; i < HobbiesCommun.length; i++) {
+                buttons.push({
+                    label: HobbiesCommun[i] + "\n",
+                    className: "success",
+                    callback: (popup) => {
+                        QuizzClicked = HobbiesCommun[i];
+                        match();
+                        popup.close();
+                    }
+                });
+            }
+        
+            buttons.push({
+                label: "No",
+                className: "success",
+                callback: (popup) => {
+                    popup.close();
+                    HobbiesCommun = [];
+                }
+            });
+        
+            helloWorldPopup = WA.ui.openPopup("clockPopup", "Hobbies commun", buttons);
+        });
+        
 
 
             remotePlayer.addAction('View interest', () => {
@@ -214,7 +247,7 @@ function closePopup() {
 }
 
 async function match() {
-    let questionsSet: string[] = getQuestionsOfInterest(HobbiesCommun);
+    let questionsSet: string[] = getQuestionsOfInterest(QuizzClicked);
 
 
     if (i < questionsSet.length) {
@@ -246,7 +279,7 @@ async function match() {
         ]);
     }
     else {
-        scoreTotal = calculeScoreForOneUser(results, HobbiesCommun);
+        scoreTotal = calculeScoreForOneUser(results, QuizzClicked);
         console.log("scoreTotalUser1", scoreTotal);
         results = [];
         WA.player.state.Score = scoreTotal;
@@ -278,3 +311,5 @@ async function match() {
 }
 
 export { };
+    
+
