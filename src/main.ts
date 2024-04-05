@@ -133,7 +133,7 @@ WA.onInit().then(() => {
 
     console.log('Scripting API ready');
 
-    if(WA.room.mapURL === 'http://localhost:5173/map.tmj' && WA.player.state.tags === undefined){
+    if(WA.player.state.tags === undefined){
         WA.ui.modal.openModal({
             title: "WorkAdventure website",
             src: 'http://localhost:5173/iframe_tags_form.html',
