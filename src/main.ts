@@ -11,6 +11,7 @@ let currentPopup: any = undefined;
 let HobbiesCommun: string;
 let i = 0;
 let r1 = 0;
+let scoreTotal = 0;
 let results: number[] = [];
 const Interests = ["Art ", "Cuisine", "Cinema", "Sport", "Culture"]
 const questions: { [key: string]: string[] } = {
@@ -215,7 +216,6 @@ function closePopup() {
 async function match() {
     let questionsSet: string[] = getQuestionsOfInterest(HobbiesCommun);
 
-    const cuisine = getQuestionsOfInterest("Cuisine");
 
     if (i < questionsSet.length) {
         WA.ui.openPopup("clockPopup", `${questionsSet[i]}\n`, [
@@ -246,7 +246,19 @@ async function match() {
         ]);
     }
     else {
-        if (r1 >= 2) {
+        scoreTotal = calculeScoreForOneUser(results, HobbiesCommun);
+        console.log("scoreTotalUser1", scoreTotal);
+        results = [];
+        WA.player.state.Score = scoreTotal;
+        if(scoreTotal >= 3)
+        {
+            WA.player.setOutlineColor(0, 255, 0); // Vert
+
+        }else{
+            WA.player.setOutlineColor(255, 0, 0); // Rouge
+            WA.player.moveTo(364,236,10);
+        }
+        /*if (r1 >= 2) {
             WA.event.broadcast("my-event", "my payload");
             await WA.players.configureTracking();
              const players = WA.players.list() ;
@@ -261,7 +273,8 @@ async function match() {
 
 
         }
-    }
+    */    }
+
 }
 
 export { };
