@@ -216,7 +216,8 @@ async function match() {
     let questionsSet: string[] = getQuestionsOfInterest(HobbiesCommun);
 
     const cuisine = getQuestionsOfInterest("Cuisine");
-    if (i < 4) {
+
+    if (i < questionsSet.length) {
         WA.ui.openPopup("clockPopup", `${questionsSet[i]}\n`, [
             {
                 label: "yes",
