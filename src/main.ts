@@ -250,7 +250,7 @@ async function match() {
     let questionsSet: string[] = getQuestionsOfInterest(QuizzClicked);
 
 
-    if (i < questionsSet.length) {
+    if (i < 5) {
         WA.ui.openPopup("clockPopup", `${questionsSet[i]}\n`, [
             {
                 label: "yes",
